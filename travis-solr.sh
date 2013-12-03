@@ -88,7 +88,12 @@ download_and_run() {
             ;;
     esac
 
-    download $url
+    if [ -d $dir_name ]
+    then
+      echo "Using existing directory $dir_name"
+    else
+      download $url
+    fi
 
     # copies custom configurations
     for file in $SOLR_CONFS
