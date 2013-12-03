@@ -18,21 +18,24 @@ wait_for_solr(){
 }
 
 run() {
-    echo "Starting solr ..."
+    local port=${2:-"8983"}
+    echo "Starting solr on port ${port}..."
+
     cd $1/example
     if [ $DEBUG ]
     then
-        java -jar start.jar &
+        java -Djetty.port=$port -jar start.jar &
     else
-        java -jar start.jar  > /dev/null 2>&1 &
+        java -Djetty.port=$port -jar start.jar > /dev/null 2>&1 &
     fi
-    wait_for_solr
+    wait_for_solr $port
     cd ../../
     echo "Started"
 }
 
 post_some_documents() {
-    java -Dtype=application/json -Durl=http://localhost:8983/solr/update/json -jar $1/example/exampledocs/post.jar $2
+    local port=${1:-"8983"}
+    java -Dtype=application/json -Durl=http://localhost:$port/solr/update/json -jar $1/example/exampledocs/post.jar $2
 }
 
 
@@ -98,7 +101,7 @@ download_and_run() {
     done
 
     # Run solr
-    run $dir_name
+    run $dir_name $SOLR_PORT
 
     # Post documents
     if [ -z "$SOLR_DOCS" ]
