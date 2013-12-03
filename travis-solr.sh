@@ -107,7 +107,7 @@ download_and_run() {
     if [ -z "$SOLR_DOCS" ]
     then
         echo "Indexing some default documents"
-        post_some_documents $dir_name $dir_name/example/exampledocs/books.json
+        # post_some_documents $dir_name $dir_name/example/exampledocs/books.json
     else
         echo "Indexing $SOLR_DOCS"
         post_some_documents $dir_name $SOLR_DOCS
