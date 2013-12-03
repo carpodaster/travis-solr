@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+SOLR_PORT=${SOLR_PORT:-8983}
+
 download() {
     echo "Downloading solr from $1..."
     curl -s $1 | tar xz
@@ -7,36 +9,34 @@ download() {
 }
 
 is_solr_up(){
-    local port=${2:-"8983"}
-    http_code=`echo $(curl -s -o /dev/null -w "%{http_code}" "http://localhost:$port/solr/admin/ping")`
+    http_code=`echo $(curl -s -o /dev/null -w "%{http_code}" "http://localhost:$SOLR_PORT/solr/admin/ping")`
     return `test $http_code = "200"`
 }
 
 wait_for_solr(){
     while ! is_solr_up; do
+        echo 'Waiting...'
         sleep 3
     done
 }
 
 run() {
-    local port=${2:-"8983"}
     echo "Starting solr on port ${port}..."
 
     cd $1/example
     if [ $DEBUG ]
     then
-        java -Djetty.port=$port -jar start.jar &
+        java -Djetty.port=$SOLR_PORT -jar start.jar &
     else
-        java -Djetty.port=$port -jar start.jar > /dev/null 2>&1 &
+        java -Djetty.port=$SOLR_PORT -jar start.jar > /dev/null 2>&1 &
     fi
-    wait_for_solr $port
+    wait_for_solr
     cd ../../
     echo "Started"
 }
 
 post_some_documents() {
-    local port=${1:-"8983"}
-    java -Dtype=application/json -Durl=http://localhost:$port/solr/update/json -jar $1/example/exampledocs/post.jar $2
+    java -Dtype=application/json -Durl=http://localhost:$SOLR_PORT/solr/update/json -jar $1/example/exampledocs/post.jar $2
 }
 
 
