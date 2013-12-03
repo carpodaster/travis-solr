@@ -7,7 +7,8 @@ download() {
 }
 
 is_solr_up(){
-    http_code=`echo $(curl -s -o /dev/null -w "%{http_code}" "http://localhost:8983/solr/admin/ping")`
+    local port=${2:-"8983"}
+    http_code=`echo $(curl -s -o /dev/null -w "%{http_code}" "http://localhost:$port/solr/admin/ping")`
     return `test $http_code = "200"`
 }
 
