@@ -88,7 +88,11 @@ download_and_run() {
             ;;
     esac
 
-    download $url
+    if [ $SOLR_REUSE_DIR ] && [ -d "$dir_name" ]; then
+      echo "Reusing existing Solr installation in $dir_name"
+    else
+      download $url
+    fi
 
     # copies custom configurations
     for file in $SOLR_CONFS
